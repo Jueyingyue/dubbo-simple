@@ -8,12 +8,9 @@ public class PersonServiceImpl implements PersonService {
 	private GreetingsService greetingsService;
 	
 	
-	
     public void setGreetingsService(GreetingsService greetingsService) {
 		this.greetingsService = greetingsService;
 	}
-
-
 
 	@Override
     public String attributes(){

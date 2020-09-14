@@ -7,7 +7,9 @@
     <!-- 消费方应用名，用于计算依赖关系，不是匹配条件，不要与提供方一样 -->
    <dubbo:application name="first-dubbo-consumer"/>
  
-    <dubbo:registry address="zookeeper://127.0.0.1:2181"/>
+     <dubbo:registry address="zookeeper://127.0.0.1:2181"/>  
+     <!-- <dubbo:registry address="multicast://224.5.6.7:1234?unicast=false"/>
+     <dubbo:protocol name="dubbo" port="20880" /> -->
     <!-- 生成远程服务代理，可以和本地bean一样使用demoService -->
   <!--   不同粒度配置的覆盖关系 以 timeout 为例，下图显示了配置的查找顺序，其它 retries, loadbalance, actives 等类似：
    方法级优先，接口级次之，全局配置再次之。如果级别一样，则消费方优先，提供方次之。 -->
