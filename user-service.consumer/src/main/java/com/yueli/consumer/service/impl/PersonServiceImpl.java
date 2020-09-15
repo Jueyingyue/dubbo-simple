@@ -1,10 +1,15 @@
 package com.yueli.consumer.service.impl;
 
+
+import org.springframework.stereotype.Service;
+
+import com.alibaba.dubbo.config.annotation.Reference;
 import com.yueli.service.GreetingsService;
 import com.yueli.service.PersonService;
-
+@SuppressWarnings("deprecation")
+@Service("personService")
 public class PersonServiceImpl implements PersonService {
-	
+	@Reference
 	private GreetingsService greetingsService;
 	
 	

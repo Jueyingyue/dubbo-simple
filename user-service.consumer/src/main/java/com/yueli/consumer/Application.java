@@ -1,42 +1,80 @@
 package com.yueli.consumer;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import org.apache.dubbo.config.spring.context.annotation.EnableDubboConfig;
 import org.apache.log4j.Logger;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.alibaba.dubbo.config.ApplicationConfig;
 import com.alibaba.dubbo.config.ReferenceConfig;
 import com.alibaba.dubbo.config.RegistryConfig;
+import com.yueli.consumer.config.ConsumerConfiguration;
 import com.yueli.consumer.service.impl.PersonServiceImpl;
 import com.yueli.service.GreetingsService;
 
 @EnableDubboConfig
-public class Application {	
+public class Application{	
 	
-	private static Logger log=Logger.getLogger(Application.class);
     private static String zookeeperHost = System.getProperty("zookeeper.address", "127.0.0.1");
-
-    @SuppressWarnings("resource")
-    public static void main(String[] args) throws Exception {
-    	/*ReferenceConfig<GreetingsService> reference = new ReferenceConfig<>();
+    static int threadCount = 21;
+    private final static CountDownLatch mCountDownLatch = new CountDownLatch(1);
+    
+    public static void method1(int i) throws Exception {
+    	ReferenceConfig<GreetingsService> reference = new ReferenceConfig<>();
         reference.setApplication(new ApplicationConfig("first-dubbo-consumer"));
         reference.setRegistry(new RegistryConfig("zookeeper://" + zookeeperHost + ":2181"));
         reference.setInterface(GreetingsService.class);
         GreetingsService service = reference.get();
-        String message = service.sayHi("dubbo");
-        System.out.println(message);*/
-    	
-    	 ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"consumer.xml"});
-         context.start();
-       try {
-         PersonServiceImpl service =context.getBean("personServiceImpl", PersonServiceImpl.class);;
-         String message = service.attributes();
-         System.out.println(message);
-		  System.in.read();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			log.error("超时"+e.getMessage());
-			e.printStackTrace();
-		} // 按任意键退出
+        String message = service.sayHi("dubbo"+i);
+        System.out.println(message);
+    }
+    
+    public static void method2(int i) throws Exception {
+    	ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"consumer.xml"});
+        context.start();
+        GreetingsService service =context.getBean("greetingsService", GreetingsService.class);;
+        String message = service.sayHi("dubbo"+i);
+        System.out.println(message);
+    }
+    
+    public static void method3(int i) throws InterruptedException {
+    	AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ConsumerConfiguration.class);
+        context.start();
+        final PersonServiceImpl annotationAction = (PersonServiceImpl) context.getBean("personService");
+        String hello = annotationAction.attributes();
+        System.out.println(hello);
+    }
+    
+
+
+    @SuppressWarnings("resource")
+    public static void main(String[] args) throws Exception {
+    	ExecutorService service = Executors.newCachedThreadPool();
+    	for (int i = 0; i < threadCount; i++) {
+        	final int j=i;
+    	    new Thread() {
+    	    	 @Override
+    	    	    public void run() {
+    	    	        try {  
+    	    	        	mCountDownLatch.await();
+    	    	        	try {
+    	    					method2(j);
+    	    				} catch (Exception e) {
+    	    					// TODO Auto-generated catch block
+    	    					e.printStackTrace();
+    	    				}
+    	    	        } catch (InterruptedException e) {  
+    	    	                e.printStackTrace();  
+    	    	        }
+    	    	    }
+
+    	    }.start();
+    	}
+        mCountDownLatch.countDown();
+        new CountDownLatch(1).await();
     }
 }

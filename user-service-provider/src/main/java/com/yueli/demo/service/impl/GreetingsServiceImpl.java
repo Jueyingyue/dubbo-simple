@@ -1,17 +1,15 @@
 package com.yueli.demo.service.impl;
 
-import com.yueli.service.GreetingsService;
+import org.apache.dubbo.config.annotation.Service;
 
+import com.yueli.service.GreetingsService;
+@Service
 public class GreetingsServiceImpl implements GreetingsService {
 	
     @Override
     public String sayHi(String name) throws Exception{
-    	try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        return "hi, " + name;
+    	name="hi, " + name;
+        System.out.println(name);
+    	return "hi, " + name;
     }
 }
