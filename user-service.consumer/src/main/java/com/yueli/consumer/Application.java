@@ -4,8 +4,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.dubbo.config.spring.context.annotation.EnableDubboConfig;
-import org.apache.log4j.Logger;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -16,7 +14,6 @@ import com.yueli.consumer.config.ConsumerConfiguration;
 import com.yueli.consumer.service.impl.PersonServiceImpl;
 import com.yueli.service.GreetingsService;
 
-@EnableDubboConfig
 public class Application{	
 	
     private static String zookeeperHost = System.getProperty("zookeeper.address", "127.0.0.1");
@@ -49,6 +46,14 @@ public class Application{
         System.out.println(hello);
     }
     
+    public static void method4(int i) throws InterruptedException {
+    	ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"consumer.xml"});
+        context.start();
+        final PersonServiceImpl annotationAction = (PersonServiceImpl) context.getBean("personServiceImpl");
+        String hello = annotationAction.attributes();
+        System.out.println(hello);
+    }
+    
 
 
     @SuppressWarnings("resource")
@@ -62,7 +67,7 @@ public class Application{
     	    	        try {  
     	    	        	mCountDownLatch.await();
     	    	        	try {
-    	    					method2(j);
+    	    	        		method4(j);
     	    				} catch (Exception e) {
     	    					// TODO Auto-generated catch block
     	    					e.printStackTrace();

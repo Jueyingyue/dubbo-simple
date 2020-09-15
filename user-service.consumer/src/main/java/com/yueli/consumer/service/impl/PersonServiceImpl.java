@@ -1,21 +1,17 @@
 package com.yueli.consumer.service.impl;
 
 
+import org.apache.dubbo.config.annotation.Reference;
 import org.springframework.stereotype.Service;
 
-import com.alibaba.dubbo.config.annotation.Reference;
 import com.yueli.service.GreetingsService;
 import com.yueli.service.PersonService;
 @SuppressWarnings("deprecation")
 @Service("personService")
 public class PersonServiceImpl implements PersonService {
+	//@Reference(url="127.0.0.1:20883") //dubbo直连跳过注册中心
 	@Reference
 	private GreetingsService greetingsService;
-	
-	
-    public void setGreetingsService(GreetingsService greetingsService) {
-		this.greetingsService = greetingsService;
-	}
 
 	@Override
     public String attributes(){
