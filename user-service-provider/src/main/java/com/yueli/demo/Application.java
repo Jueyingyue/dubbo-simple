@@ -33,25 +33,22 @@ public class Application {
             service.export();
             System.out.println("dubbo service started");
     	}
-    	
-        new CountDownLatch(1).await();
     }
     
     public static void method2() throws Exception {
     	 ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"provider.xml"});
     	 context.start();
          System.out.println("dubbo service started");
-         new CountDownLatch(1).await();
     }
     
     public static void method3() throws Exception {
     	AnnotationConfigApplicationContext context= new AnnotationConfigApplicationContext(ProviderConfiguration.class);
         System.out.println("dubbo service started");
         context.start();
-        new CountDownLatch(1).await();
     }
 
     public static void main(String[] args) throws Exception {
     	method3();
+        new CountDownLatch(1).await();
     }
 }
